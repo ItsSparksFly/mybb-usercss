@@ -19,7 +19,7 @@ function usercss_info()
 		"website"		=> "https://github.com/its-sparks-fly",
 		"author"		=> "sparks fly",
 		"authorsite"	=> "https://sparks-fly.info",
-		"version"		=> "1.0",
+		"version"		=> "1.1",
 		"compatibility" => "18*"
 	);
 }
@@ -241,7 +241,10 @@ function usercss_usercp_start() {
                         "cachefile" => "css.php?stylesheet=".$neweststylesheet,
                         "lastmodified" => time()
                     ];
-                    $db->insert_query("themestylesheets", $new_record);
+                    $sid = $db->insert_query("themestylesheets", $new_record);
+                }
+                else {
+                    $sid = $db->fetch_field($db->simple_select("themestylesheets", "sid", "name = 'usercss.css' AND tid = '{$style['tid']}'"), "sid");
                 }
                 if(!preg_match("/$field/i", $usercss)) {
                     $usercss = $usercss . $field . " { font-weight: bold; color: " . $mybb->get_input('css_'.$style['tid']) . "; }" . "\n";
@@ -256,6 +259,14 @@ function usercss_usercp_start() {
                 ];
 
                 $db->update_query("themestylesheets", $new_record, "tid = '{$style['tid']}' AND name = 'usercss.css'");
+                require_once "./{$mybb->config['admin_dir']}/inc/functions_themes.php";
+				// Cache the stylesheet to the file
+				if(!cache_stylesheet($style['tid'], "usercss.css", $usercss))
+				{
+					$db->update_query("themestylesheets", array('cachefile' => "css.php?stylesheet={$sid}"), "sid='{$sid}'", 1);
+				}
+				// Update the CSS file list for this theme
+				update_theme_stylesheet_list($style['tid']);
             }
         }
         redirect("usercp.php?action=usercss", $lang->usercss_redirect);
