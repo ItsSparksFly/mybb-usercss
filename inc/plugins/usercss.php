@@ -160,7 +160,7 @@ function usercss_activate()
             </div>
         </td>
         <td align="center" class="trow1">
-            <input type="text" value="{$matching[1]}" name="css_{$style[\'tid\']}" class="textfield" maxlength="7" \>
+            <input type="color" value="{$matching[1]}" name="css_{$style[\'tid\']}" class="textfield" maxlength="7" \>
         </td>
     </tr>'),
 		'sid'		=> '-1',
